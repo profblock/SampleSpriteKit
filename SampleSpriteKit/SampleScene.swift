@@ -12,8 +12,8 @@ import SpriteKit
 
 
 /* Todo */
-// 1. Set up basic scene
-// 2. Add ball
+// - 1. Set up basic scene
+// - 2. Add ball
 // 3. Move ball
 // 4. bounce ball on edge
 // 5. bounce ball on object
@@ -38,6 +38,12 @@ class SampleScene: SKScene {
         self.ball = SKShapeNode.init(ellipseIn: CGRect(x: 0.0, y: 0.0, width: w, height: w))
         self.ball?.fillColor = UIColor.red
         self.addChild(self.ball!)
+        
+        let moveUp = SKAction.moveBy(x: 50, y: 200, duration: 2)
+        
+        let sequence = SKAction.sequence([moveUp, moveUp.reversed()])
+        
+        ball?.run(SKAction.repeatForever(sequence), withKey:  "movingUpRightAndBack")
         
 //
 //
