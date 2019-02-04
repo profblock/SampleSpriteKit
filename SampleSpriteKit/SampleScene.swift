@@ -29,6 +29,7 @@ class SampleScene: SKScene {
     // Shape node might be approriate for ball and maybe approriate for other shapes, but
     // too many can impact performance
     private var ball : SKShapeNode?
+    private var ball2 : SKShapeNode?
     
     //didMove is the method that is called when the system is loaded.
     override func didMove(to view: SKView) {
@@ -36,12 +37,20 @@ class SampleScene: SKScene {
         // Create shape node to use during mouse interaction
         let w = (self.size.width + self.size.height) * 0.05
         self.ball = SKShapeNode(ellipseOf: CGSize(width: w, height: w))
-        
         self.ball?.position = CGPoint(x: 320, y: 320)
         self.ball?.fillColor = UIColor.red
         self.ball?.physicsBody = SKPhysicsBody(circleOfRadius: w/2)
         self.ball?.physicsBody?.usesPreciseCollisionDetection = true
         self.ball?.physicsBody?.friction = 0.0
+
+        
+        self.ball2 = SKShapeNode(ellipseOf: CGSize(width: w, height: w))
+        self.ball2?.position = CGPoint(x: 200, y: 320)
+        self.ball2?.fillColor = UIColor.blue
+        self.ball2?.physicsBody = SKPhysicsBody(circleOfRadius: w/2)
+        self.ball2?.physicsBody?.usesPreciseCollisionDetection = true
+        self.ball2?.physicsBody?.friction = 0.0
+
         
         // Create the ground node and physics body
         var splinePoints = [CGPoint(x: 0, y: 500),
@@ -59,6 +68,7 @@ class SampleScene: SKScene {
         
         // Add the two nodes to the scene
         self.addChild(self.ball!)
+        self.addChild(self.ball2!)
         self.addChild(ground)
         
         
