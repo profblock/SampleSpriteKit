@@ -35,15 +35,42 @@ class SampleScene: SKScene {
         
         // Create shape node to use during mouse interaction
         let w = (self.size.width + self.size.height) * 0.05
-        self.ball = SKShapeNode.init(ellipseIn: CGRect(x: 0.0, y: 0.0, width: w, height: w))
+        self.ball = SKShapeNode(ellipseOf: CGSize(width: w, height: w))
+        
+        self.ball?.position = CGPoint(x: 320, y: 320)
         self.ball?.fillColor = UIColor.red
+        self.ball?.physicsBody = SKPhysicsBody(circleOfRadius: w/2)
+        self.ball?.physicsBody?.usesPreciseCollisionDetection = true
+        self.ball?.physicsBody?.friction = 0.0
+        
+        // Create the ground node and physics body
+        var splinePoints = [CGPoint(x: 0, y: 500),
+                            CGPoint(x: 100, y: 50),
+                            CGPoint(x: 400, y: 110),
+                            CGPoint(x: 640, y: 20)]
+        
+        let ground = SKShapeNode(splinePoints: &splinePoints,
+                                 count: splinePoints.count)
+        ground.lineWidth = 5
+        ground.physicsBody = SKPhysicsBody(edgeChainFrom: ground.path!)
+        ground.physicsBody?.restitution = 0.75
+        ground.physicsBody?.isDynamic = false
+        ground.physicsBody?.friction = 0.0
+        
+        // Add the two nodes to the scene
         self.addChild(self.ball!)
+        self.addChild(ground)
         
-        let moveUp = SKAction.moveBy(x: 50, y: 200, duration: 2)
         
-        let sequence = SKAction.sequence([moveUp, moveUp.reversed()])
+        //self.addChild(self.ball!)
         
-        ball?.run(SKAction.repeatForever(sequence), withKey:  "movingUpRightAndBack")
+        
+//
+//        let moveUp = SKAction.moveBy(x: 50, y: 200, duration: 2)
+//
+//        let sequence = SKAction.sequence([moveUp, moveUp.reversed()])
+//
+//        ball?.run(SKAction.repeatForever(sequence), withKey:  "movingUpRightAndBack")
         
 //
 //
