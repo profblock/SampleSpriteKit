@@ -30,10 +30,13 @@ class SampleScene: SKScene {
     // too many can impact performance
     private var ball : SKShapeNode?
     private var ball2 : SKShapeNode?
+    private var chargeValue:CGFloat!
+    private var startPoint:CGPoint?
     
     //didMove is the method that is called when the system is loaded.
     override func didMove(to view: SKView) {
         
+        chargeValue = 0.0
         // Create shape node to use during mouse interaction
         let w = (self.size.width + self.size.height) * 0.05
         self.ball = SKShapeNode(ellipseOf: CGSize(width: w, height: w))
@@ -41,7 +44,7 @@ class SampleScene: SKScene {
         self.ball?.fillColor = UIColor.red
         self.ball?.physicsBody = SKPhysicsBody(circleOfRadius: w/2)
         self.ball?.physicsBody?.usesPreciseCollisionDetection = true
-        self.ball?.physicsBody?.friction = 0.0
+        self.ball?.physicsBody?.friction = 1.0
 
         
         self.ball2 = SKShapeNode(ellipseOf: CGSize(width: w, height: w))
@@ -49,7 +52,7 @@ class SampleScene: SKScene {
         self.ball2?.fillColor = UIColor.blue
         self.ball2?.physicsBody = SKPhysicsBody(circleOfRadius: w/2)
         self.ball2?.physicsBody?.usesPreciseCollisionDetection = true
-        self.ball2?.physicsBody?.friction = 0.0
+        self.ball2?.physicsBody?.friction = 1.0
 
         
         // Create the ground node and physics body
@@ -64,7 +67,7 @@ class SampleScene: SKScene {
         ground.physicsBody = SKPhysicsBody(edgeChainFrom: ground.path!)
         ground.physicsBody?.restitution = 0.75
         ground.physicsBody?.isDynamic = false
-        ground.physicsBody?.friction = 0.0
+        ground.physicsBody?.friction = 1.0
         
         // Add the two nodes to the scene
         self.addChild(self.ball!)
@@ -75,23 +78,34 @@ class SampleScene: SKScene {
         //self.addChild(self.ball!)
         
         
-//
-//        let moveUp = SKAction.moveBy(x: 50, y: 200, duration: 2)
-//
-//        let sequence = SKAction.sequence([moveUp, moveUp.reversed()])
-//
-//        ball?.run(SKAction.repeatForever(sequence), withKey:  "movingUpRightAndBack")
+    }
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if let touch = touches.first{
+            print("Touches started")
+            startPoint = touch.location(in: self)
+            print("x:\(touch.location(in: self).x),y:\(touch.location(in: self).y) ")
+        }
+    }
+    
+    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if let touch = touches.first{
+            print("Touches moved")
+            print("x:\(touch.location(in: self).x),y:\(touch.location(in: self).y) ")
+        }
+    }
+    
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if let touch = touches.first, let startPoint = self.startPoint{
+            print("Touches ENDED")
+            let endPoint = touch.location(in: self)
+            print("x:\(touch.location(in: self).x),y:\(touch.location(in: self).y) ")
+            
+            let factor : CGFloat = 1.0
+            let charge = CGVector(dx: factor*(startPoint.x - endPoint.x), dy: factor*(startPoint.y - endPoint.y))
+            ball?.physicsBody?.applyImpulse(charge)
+        }
         
-//
-//
-//        if let spinnyNode = self.spinnyNode {
-//            spinnyNode.lineWidth = 2.5
-//
-//            spinnyNode.run(SKAction.repeatForever(SKAction.rotate(byAngle: CGFloat(Double.pi), duration: 1)))
-//            spinnyNode.run(SKAction.sequence([SKAction.wait(forDuration: 0.5),
-//                                              SKAction.fadeOut(withDuration: 0.5),
-//                                              SKAction.removeFromParent()]))
-//        }
     }
     
 }
