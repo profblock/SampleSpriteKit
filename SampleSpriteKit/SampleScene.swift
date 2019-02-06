@@ -25,6 +25,7 @@ import SpriteKit
 
 //SKScenes are the "view" equivalant for sprite kit.
 class SampleScene: SKScene {
+    private var mainNode:SKNode?
 
     // Shape node might be approriate for ball and maybe approriate for other shapes, but
     // too many can impact performance
@@ -36,6 +37,7 @@ class SampleScene: SKScene {
     //didMove is the method that is called when the system is loaded.
     override func didMove(to view: SKView) {
         
+        mainNode = SKNode()
         chargeValue = 0.0
         // Create shape node to use during mouse interaction
         let w = (self.size.width + self.size.height) * 0.05
@@ -70,11 +72,11 @@ class SampleScene: SKScene {
         ground.physicsBody?.friction = 1.0
         
         // Add the two nodes to the scene
-        self.addChild(self.ball!)
-        self.addChild(self.ball2!)
-        self.addChild(ground)
+        mainNode?.addChild(self.ball!)
+        mainNode?.addChild(self.ball2!)
+        mainNode?.addChild(ground)
         
-        
+        self.addChild(mainNode!)
         //self.addChild(self.ball!)
         
         
@@ -98,14 +100,21 @@ class SampleScene: SKScene {
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         if let touch = touches.first, let startPoint = self.startPoint{
             print("Touches ENDED")
+            
             let endPoint = touch.location(in: self)
             print("x:\(touch.location(in: self).x),y:\(touch.location(in: self).y) ")
-            
+
             let factor : CGFloat = 1.0
             let charge = CGVector(dx: factor*(startPoint.x - endPoint.x), dy: factor*(startPoint.y - endPoint.y))
             ball?.physicsBody?.applyImpulse(charge)
         }
         
     }
+    
+//    override func didFinishUpdate() {
+//        let xPos = self.size.width/2.0 - ball!.position.x
+//        let yPos = self.size.height/2.0 - ball!.position.y
+//        mainNode?.position = CGPoint(x:xPos,y:yPos)
+//    }
     
 }
