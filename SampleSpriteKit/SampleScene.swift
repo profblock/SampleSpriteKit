@@ -36,6 +36,26 @@ class SampleScene: SKScene {
     private var myCamera:SKCameraNode!
     
     
+    func createSpline(startPoint:CGPoint, numberOfPoints:Int)->[CGPoint]{
+        let horizMin = 40
+        let horizMax = 100
+        let vertMin = -2
+        let vertMax = 50
+        
+        var splinePoints = [CGPoint]()
+        splinePoints.append(startPoint)
+        
+        var lastPoint = startPoint
+        for _ in 0 ..< numberOfPoints {
+            let horizDelta = CGFloat(Int.random(in: horizMin ..< horizMax))
+            let vertDelta = CGFloat(Int.random(in: vertMin ..< vertMax))
+            lastPoint = CGPoint(x: lastPoint.x + horizDelta, y: lastPoint.y + vertDelta)
+            splinePoints.append(lastPoint)
+        }
+        
+        return splinePoints
+    }
+    
     //didMove is the method that is called when the system is loaded.
     override func didMove(to view: SKView) {
         
@@ -43,15 +63,15 @@ class SampleScene: SKScene {
         chargeValue = 0.0
         // Create shape node to use during mouse interaction
         let w = (self.size.width + self.size.height) * 0.05
-        var hexagonPoints = [CGPoint(x: 0, y: -20),
-                             CGPoint(x: -19, y: -6),
-                             CGPoint(x: -12, y: 16),
-                             CGPoint(x: 12, y: 16),
-                             CGPoint(x: 19, y: -6),
-                             CGPoint(x: 0, y: -20)]
+//        var hexagonPoints = [CGPoint(x: 0, y: -20),
+//                             CGPoint(x: -19, y: -6),
+//                             CGPoint(x: -12, y: 16),
+//                             CGPoint(x: 12, y: 16),
+//                             CGPoint(x: 19, y: -6),
+//                             CGPoint(x: 0, y: -20)]
         
-        //self.ball = SKShapeNode(ellipseOf: CGSize(width: w, height: w))
-        self.ball = SKShapeNode(points: &hexagonPoints, count: 6)
+        self.ball = SKShapeNode(ellipseOf: CGSize(width: w/2.0, height: w/2.0))
+        //self.ball = SKShapeNode(points: &hexagonPoints, count: 6)
         self.ball?.position = CGPoint(x: 320, y: 320)
         self.ball?.fillColor = UIColor.red
         //self.ball?.physicsBody = SKPhysicsBody(circleOfRadius: w/2)
@@ -69,23 +89,41 @@ class SampleScene: SKScene {
 
         
         // Create the ground node and physics body
-        var splinePoints = [CGPoint(x: 0, y: 500),
-                            CGPoint(x: 100, y: 50),
-                            CGPoint(x: 400, y: 110),
-                            CGPoint(x: 640, y: 20)]
+//        var splinePoints = [CGPoint(x: 0, y: 500),
+//                            CGPoint(x: 100, y: 50),
+//                            CGPoint(x: 400, y: 110),
+//                            CGPoint(x: 640, y: 20)]
+        
+        let baseCornerPoint = CGPoint(x: 0, y: 0)
+        var splinePoints = createSpline(startPoint: baseCornerPoint, numberOfPoints: 500)
+        
         
         let ground = SKShapeNode(splinePoints: &splinePoints,
                                  count: splinePoints.count)
         ground.lineWidth = 5
         ground.physicsBody = SKPhysicsBody(edgeChainFrom: ground.path!)
-        ground.physicsBody?.restitution = 1.0
+        ground.physicsBody?.restitution = 0.3
         ground.physicsBody?.isDynamic = false
         ground.physicsBody?.friction = 1.0
+
+        
+        let upperBoundPoint = CGPoint(x: baseCornerPoint.x, y: baseCornerPoint.y+10000)
+        var linePoints = [baseCornerPoint,upperBoundPoint]
+        let leftLine = SKShapeNode(points: &linePoints, count: linePoints.count)
+        
+        leftLine.lineWidth = 5
+        leftLine.physicsBody = SKPhysicsBody(edgeChainFrom: leftLine.path!)
+        leftLine.physicsBody?.restitution = 0.0
+        leftLine.physicsBody?.isDynamic = false
+        leftLine.physicsBody?.friction = 1.0
+        leftLine.strokeColor = UIColor.red
+
         
         // Add the two nodes to the scene
         mainNode?.addChild(self.ball!)
         mainNode?.addChild(self.ball2!)
         mainNode?.addChild(ground)
+        mainNode?.addChild(leftLine)
         
         self.addChild(mainNode!)
         myCamera = SKCameraNode()
