@@ -56,6 +56,33 @@ class SampleScene: SKScene {
         return splinePoints
     }
     
+    func createCeilingSpline(floorPoints:[CGPoint])->[CGPoint]{
+        let horizMin = -10 // Should be related to the min spacing above.
+        let horizMax = 20
+        let vertMin = 400
+        let vertMax = 500
+        
+        var splinePoints = [CGPoint]()
+        
+        let firstPoint = CGPoint(x: floorPoints.first!.x,
+                                 y: floorPoints.first!.y + CGFloat(Int.random(in: vertMin ..< vertMax)))
+        splinePoints.append(firstPoint)
+        
+        var count = 1
+        while count < floorPoints.count-1{
+            let point = CGPoint(x: floorPoints[count].x + CGFloat(Int.random(in: horizMin ..< horizMax)),
+                                y: floorPoints[count].y + CGFloat(Int.random(in: vertMin ..< vertMax)))
+            splinePoints.append(point)
+            count+=1
+        }
+        
+        let lastPoint = CGPoint(x: floorPoints.last!.x,
+                                 y: floorPoints.last!.y + CGFloat(Int.random(in: vertMin ..< vertMax)))
+        splinePoints.append(lastPoint)
+        
+        return splinePoints
+    }
+    
     //didMove is the method that is called when the system is loaded.
     override func didMove(to view: SKView) {
         
@@ -78,7 +105,15 @@ class SampleScene: SKScene {
         self.ball?.physicsBody = SKPhysicsBody(polygonFrom: self.ball!.path!)
         self.ball?.physicsBody?.usesPreciseCollisionDetection = true
         self.ball?.physicsBody?.friction = 1.0
-
+        self.ball?.strokeColor = UIColor.red
+        let gradientShader = SKShader(source: "void main() {" +
+            "float normalisedPosition = v_path_distance / u_path_length;" +
+            "gl_FragColor = vec4(normalisedPosition, normalisedPosition, 0.0, 0.5);" +
+            "}")
+        ball?.fillColor = .blue
+        ball?.lineWidth = 4
+        ball?.strokeShader = gradientShader
+        
         
         self.ball2 = SKShapeNode(ellipseOf: CGSize(width: w, height: w))
         self.ball2?.position = CGPoint(x: 200, y: 320)
@@ -105,6 +140,16 @@ class SampleScene: SKScene {
         ground.physicsBody?.restitution = 0.3
         ground.physicsBody?.isDynamic = false
         ground.physicsBody?.friction = 1.0
+        
+        var ceilingPoints = createCeilingSpline(floorPoints: splinePoints)
+        let ceiling = SKShapeNode(splinePoints: &ceilingPoints,
+                                 count: ceilingPoints.count)
+        ceiling.lineWidth = 5
+        ceiling.physicsBody = SKPhysicsBody(edgeChainFrom: ceiling.path!)
+        ceiling.physicsBody?.restitution = 0.0
+        ceiling.physicsBody?.isDynamic = false
+        ceiling.physicsBody?.friction = 1.0
+        ceiling.strokeColor = UIColor.yellow
 
         
         let upperBoundPoint = CGPoint(x: baseCornerPoint.x, y: baseCornerPoint.y+10000)
@@ -123,7 +168,9 @@ class SampleScene: SKScene {
         mainNode?.addChild(self.ball!)
         mainNode?.addChild(self.ball2!)
         mainNode?.addChild(ground)
+        mainNode?.addChild(ceiling)
         mainNode?.addChild(leftLine)
+        
         
         self.addChild(mainNode!)
         myCamera = SKCameraNode()
