@@ -33,6 +33,8 @@ class SampleScene: SKScene {
     private var ball2 : SKShapeNode?
     private var chargeValue:CGFloat!
     private var startPoint:CGPoint?
+    private var myCamera:SKCameraNode!
+    
     
     //didMove is the method that is called when the system is loaded.
     override func didMove(to view: SKView) {
@@ -41,10 +43,19 @@ class SampleScene: SKScene {
         chargeValue = 0.0
         // Create shape node to use during mouse interaction
         let w = (self.size.width + self.size.height) * 0.05
-        self.ball = SKShapeNode(ellipseOf: CGSize(width: w, height: w))
+        var hexagonPoints = [CGPoint(x: 0, y: -20),
+                             CGPoint(x: -19, y: -6),
+                             CGPoint(x: -12, y: 16),
+                             CGPoint(x: 12, y: 16),
+                             CGPoint(x: 19, y: -6),
+                             CGPoint(x: 0, y: -20)]
+        
+        //self.ball = SKShapeNode(ellipseOf: CGSize(width: w, height: w))
+        self.ball = SKShapeNode(points: &hexagonPoints, count: 6)
         self.ball?.position = CGPoint(x: 320, y: 320)
         self.ball?.fillColor = UIColor.red
-        self.ball?.physicsBody = SKPhysicsBody(circleOfRadius: w/2)
+        //self.ball?.physicsBody = SKPhysicsBody(circleOfRadius: w/2)
+        self.ball?.physicsBody = SKPhysicsBody(polygonFrom: self.ball!.path!)
         self.ball?.physicsBody?.usesPreciseCollisionDetection = true
         self.ball?.physicsBody?.friction = 1.0
 
@@ -67,7 +78,7 @@ class SampleScene: SKScene {
                                  count: splinePoints.count)
         ground.lineWidth = 5
         ground.physicsBody = SKPhysicsBody(edgeChainFrom: ground.path!)
-        ground.physicsBody?.restitution = 0.75
+        ground.physicsBody?.restitution = 1.0
         ground.physicsBody?.isDynamic = false
         ground.physicsBody?.friction = 1.0
         
@@ -77,6 +88,10 @@ class SampleScene: SKScene {
         mainNode?.addChild(ground)
         
         self.addChild(mainNode!)
+        myCamera = SKCameraNode()
+        self.camera = myCamera
+        self.addChild(myCamera)
+        
         //self.addChild(self.ball!)
         
         
@@ -98,9 +113,10 @@ class SampleScene: SKScene {
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        
         if let touch = touches.first, let startPoint = self.startPoint{
             print("Touches ENDED")
-            
+
             let endPoint = touch.location(in: self)
             print("x:\(touch.location(in: self).x),y:\(touch.location(in: self).y) ")
 
@@ -111,10 +127,14 @@ class SampleScene: SKScene {
         
     }
     
-//    override func didFinishUpdate() {
-//        let xPos = self.size.width/2.0 - ball!.position.x
-//        let yPos = self.size.height/2.0 - ball!.position.y
-//        mainNode?.position = CGPoint(x:xPos,y:yPos)
-//    }
-    
+    override func didFinishUpdate() {
+        let xPos =  ball!.position.x
+        let yPos = ball!.position.y
+        self.camera?.position = CGPoint(x: xPos, y: yPos)
+        
+/* self.camera?.xScale = self.camera!.xScale * 2.0
+ self.camera?.yScale = self.camera!.yScale * 2.0
+ */
+    }
+//    
 }
