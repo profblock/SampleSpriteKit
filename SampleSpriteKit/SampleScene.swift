@@ -9,6 +9,12 @@
 import UIKit
 import SpriteKit
 
+struct PhysicsCategory {
+    static let None      : UInt32 = 0
+    static let All       : UInt32 = UInt32.max
+    static let Ball   : UInt32 = 0b1       // 1
+    static let Ground: UInt32 = 0b10      // 2
+}
 
 
 /* Todo */
@@ -24,7 +30,7 @@ import SpriteKit
 // 11. Increase acceleration in direction with drag.
 
 //SKScenes are the "view" equivalant for sprite kit.
-class SampleScene: SKScene {
+class SampleScene: SKScene, SKPhysicsContactDelegate {
     private var mainNode:SKNode?
 
     // Shape node might be approriate for ball and maybe approriate for other shapes, but
@@ -91,6 +97,9 @@ class SampleScene: SKScene {
         
         mainNode = SKNode()
         chargeValue = 0.0
+        
+        physicsWorld.contactDelegate = self
+        
         // Create shape node to use during mouse interaction
         let w = (self.size.width + self.size.height) * 0.05
 //        var hexagonPoints = [CGPoint(x: 0, y: -20),
@@ -144,6 +153,10 @@ class SampleScene: SKScene {
         ground.physicsBody?.isDynamic = false
         ground.physicsBody?.friction = 1.0
         
+        ball?.physicsBody?.contactTestBitMask = 0b0001
+        ball2?.physicsBody?.contactTestBitMask = 0b0010
+        ground.physicsBody?.categoryBitMask = 0b0001
+        
         var ceilingPoints = createCeilingSpline(floorPoints: splinePoints)
         let ceiling = SKShapeNode(splinePoints: &ceilingPoints,
                                  count: ceilingPoints.count)
@@ -180,6 +193,9 @@ class SampleScene: SKScene {
         myCamera = SKCameraNode()
         self.camera = myCamera
         self.addChild(myCamera)
+        
+
+
         
         //self.addChild(self.ball!)
         
@@ -228,10 +244,41 @@ class SampleScene: SKScene {
  */
     }
     
+<<<<<<< HEAD
     func moveWall() {
         leftLine!.position.x += 1
 //        SKAction.move(by: CGVector(dx: 1, dy: 0), duration: 5) // Not sure why neither work
 //        print("WE BE MOVIN: \(leftLine!.position.x)")
+=======
+    func didBegin(_ contact: SKPhysicsContact) {
+        
+        print("A collision")
+        // 1
+        var firstBody: SKPhysicsBody
+        var secondBody: SKPhysicsBody
+        
+        if contact.bodyA.categoryBitMask < contact.bodyB.categoryBitMask {
+            firstBody = contact.bodyA
+            secondBody = contact.bodyB
+        } else {
+            firstBody = contact.bodyB
+            secondBody = contact.bodyA
+        }
+        
+        // 2
+        if ((firstBody.categoryBitMask & PhysicsCategory.Ball != 0) &&
+            (secondBody.categoryBitMask & PhysicsCategory.Ground != 0)) {
+            if let monster = firstBody.node as? SKShapeNode, let
+                projectile = secondBody.node as? SKShapeNode {
+                print("A collision between the ball and ground")
+//                projectileDidCollideWithMonster(projectile: projectile, monster: monster)
+            }
+        }
+    }
+    
+    func didEnd(_ contact: SKPhysicsContact) {
+        print("It ended")
+>>>>>>> 4bb506866a6fbce8d613f93accc6566d29427942
     }
 //    
 }
