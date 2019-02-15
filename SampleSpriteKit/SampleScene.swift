@@ -229,8 +229,8 @@ class SampleScene: SKScene {
     }
     
     func moveWall() {
-//        leftLine!.position.x += wallX
-        SKAction.move(by: CGVector(dx: 1, dy: 0), duration: 5) // Not sure why neither work
+        leftLine!.position.x += 1
+//        SKAction.move(by: CGVector(dx: 1, dy: 0), duration: 5) // Not sure why neither work
 //        print("WE BE MOVIN: \(leftLine!.position.x)")
     }
 //    
