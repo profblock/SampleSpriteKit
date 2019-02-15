@@ -46,6 +46,9 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
     private var startPoint:CGPoint?
     private var myCamera:SKCameraNode!
     
+    private var leftLine:SKShapeNode?
+    private var wallX:CGFloat!
+    
     
     func createSpline(startPoint:CGPoint, numberOfPoints:Int)->[CGPoint]{
         let horizMin = 40
@@ -190,16 +193,15 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
         
         let upperBoundPoint = CGPoint(x: baseCornerPoint.x, y: baseCornerPoint.y+10000)
         var linePoints = [baseCornerPoint,upperBoundPoint]
-        let leftLine = SKShapeNode(points: &linePoints, count: linePoints.count)
+        leftLine = SKShapeNode(points: &linePoints, count: linePoints.count)
+        wallX = linePoints.first!.x
         
-        leftLine.lineWidth = 5
-        leftLine.physicsBody = SKPhysicsBody(edgeChainFrom: leftLine.path!)
-        leftLine.physicsBody?.restitution = 0.0
-        leftLine.physicsBody?.isDynamic = false
-        leftLine.physicsBody?.friction = 1.0
-        leftLine.strokeColor = UIColor.red
-        leftLine.physicsBody?.categoryBitMask = PhysicsCategory.Ground
-
+        leftLine?.lineWidth = 5
+        leftLine?.physicsBody = SKPhysicsBody(edgeChainFrom: leftLine!.path!)
+        leftLine?.physicsBody?.restitution = 0.0
+        leftLine?.physicsBody?.isDynamic = false
+        leftLine?.physicsBody?.friction = 1.0
+        leftLine?.strokeColor = UIColor.red
 
         
         // Add the two nodes to the scene
@@ -208,7 +210,7 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
         mainNode?.addChild(self.coin!)
         mainNode?.addChild(ground)
         mainNode?.addChild(ceiling)
-        mainNode?.addChild(leftLine)
+        mainNode?.addChild(leftLine!)
         
         
         self.addChild(mainNode!)
@@ -259,11 +261,17 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
         let yPos = ball!.position.y
         self.camera?.position = CGPoint(x: xPos, y: yPos)
         
+        moveWall()
+        
 /* self.camera?.xScale = self.camera!.xScale * 2.0
  self.camera?.yScale = self.camera!.yScale * 2.0
  */
     }
     
+    func moveWall() {
+        leftLine!.position.x += 1
+//        SKAction.move(by: CGVector(dx: 1, dy: 0), duration: 5) // Not sure why neither work
+//        print("WE BE MOVIN: \(leftLine!.position.x)")
     func didBegin(_ contact: SKPhysicsContact) {
         
         print("A collision")
@@ -297,4 +305,5 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
 //        print("It ended")
 //    }
 //
+}
 }
