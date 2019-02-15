@@ -244,12 +244,10 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
  */
     }
     
-<<<<<<< HEAD
     func moveWall() {
         leftLine!.position.x += 1
 //        SKAction.move(by: CGVector(dx: 1, dy: 0), duration: 5) // Not sure why neither work
 //        print("WE BE MOVIN: \(leftLine!.position.x)")
-=======
     func didBegin(_ contact: SKPhysicsContact) {
         
         print("A collision")
@@ -278,7 +276,7 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
     
     func didEnd(_ contact: SKPhysicsContact) {
         print("It ended")
->>>>>>> 4bb506866a6fbce8d613f93accc6566d29427942
     }
 //    
+}
 }
