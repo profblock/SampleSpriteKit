@@ -14,7 +14,10 @@ struct PhysicsCategory {
     static let All       : UInt32 = UInt32.max
     static let Ball   : UInt32 = 0b1       // 1
     static let Ground: UInt32 = 0b10      // 2
+    static let Coin: UInt32 = 0b100      // 4
 }
+
+
 
 
 /* Todo */
@@ -37,6 +40,8 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
     // too many can impact performance
     private var ball : SKShapeNode?
     private var ball2 : SKShapeNode?
+    private var coin: SKShapeNode?
+    
     private var chargeValue:CGFloat!
     private var startPoint:CGPoint?
     private var myCamera:SKCameraNode!
@@ -131,6 +136,16 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
         self.ball2?.physicsBody?.usesPreciseCollisionDetection = true
         self.ball2?.physicsBody?.friction = 1.0
 
+        self.coin = SKShapeNode(ellipseOf: CGSize(width: w/2, height: 3*w))
+        self.coin?.position = CGPoint(x: 400, y: 320)
+        self.coin?.fillColor = UIColor.yellow
+        self.coin?.physicsBody = SKPhysicsBody(edgeLoopFrom: self.coin!.path!)
+        self.coin?.physicsBody?.usesPreciseCollisionDetection = true
+        self.coin?.physicsBody?.isDynamic = false
+        
+        coin?.physicsBody?.contactTestBitMask = PhysicsCategory.Ball
+        coin?.physicsBody?.categoryBitMask = PhysicsCategory.Coin
+        coin?.physicsBody?.collisionBitMask = PhysicsCategory.None
         
         // Create the ground node and physics body
 //        var splinePoints = [CGPoint(x: 0, y: 500),
@@ -150,9 +165,15 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
         ground.physicsBody?.isDynamic = false
         ground.physicsBody?.friction = 1.0
         
-        ball?.physicsBody?.contactTestBitMask = 0b0001
-        ball2?.physicsBody?.contactTestBitMask = 0b0010
-        ground.physicsBody?.categoryBitMask = 0b0001
+        ball?.physicsBody?.contactTestBitMask = PhysicsCategory.Ball
+        ball?.physicsBody?.categoryBitMask = PhysicsCategory.Ball
+        ball?.physicsBody?.collisionBitMask = PhysicsCategory.Ball | PhysicsCategory.Ground
+        
+        ball2?.physicsBody?.contactTestBitMask = PhysicsCategory.Ball
+        ball2?.physicsBody?.categoryBitMask = PhysicsCategory.Ball
+        ball2?.physicsBody?.collisionBitMask = PhysicsCategory.Ball | PhysicsCategory.Ground
+        
+        ground.physicsBody?.categoryBitMask = PhysicsCategory.Ground
         
         var ceilingPoints = createCeilingSpline(floorPoints: splinePoints)
         let ceiling = SKShapeNode(splinePoints: &ceilingPoints,
@@ -163,6 +184,8 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
         ceiling.physicsBody?.isDynamic = false
         ceiling.physicsBody?.friction = 1.0
         ceiling.strokeColor = UIColor.yellow
+        ceiling.physicsBody?.categoryBitMask = PhysicsCategory.Ground
+
 
         
         let upperBoundPoint = CGPoint(x: baseCornerPoint.x, y: baseCornerPoint.y+10000)
@@ -175,11 +198,14 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
         leftLine.physicsBody?.isDynamic = false
         leftLine.physicsBody?.friction = 1.0
         leftLine.strokeColor = UIColor.red
+        leftLine.physicsBody?.categoryBitMask = PhysicsCategory.Ground
+
 
         
         // Add the two nodes to the scene
         mainNode?.addChild(self.ball!)
         mainNode?.addChild(self.ball2!)
+        mainNode?.addChild(self.coin!)
         mainNode?.addChild(ground)
         mainNode?.addChild(ceiling)
         mainNode?.addChild(leftLine)
@@ -200,26 +226,26 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         if let touch = touches.first{
-            print("Touches started")
+            //print("Touches started")
             startPoint = touch.location(in: self)
-            print("x:\(touch.location(in: self).x),y:\(touch.location(in: self).y) ")
+            //print("x:\(touch.location(in: self).x),y:\(touch.location(in: self).y) ")
         }
     }
     
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         if let touch = touches.first{
-            print("Touches moved")
-            print("x:\(touch.location(in: self).x),y:\(touch.location(in: self).y) ")
+            //print("Touches moved")
+            //print("x:\(touch.location(in: self).x),y:\(touch.location(in: self).y) ")
         }
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         
         if let touch = touches.first, let startPoint = self.startPoint{
-            print("Touches ENDED")
+            //print("Touches ENDED")
 
             let endPoint = touch.location(in: self)
-            print("x:\(touch.location(in: self).x),y:\(touch.location(in: self).y) ")
+            //print("x:\(touch.location(in: self).x),y:\(touch.location(in: self).y) ")
 
             let factor : CGFloat = 1.0
             let charge = CGVector(dx: factor*(startPoint.x - endPoint.x), dy: factor*(startPoint.y - endPoint.y))
@@ -255,17 +281,20 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
         
         // 2
         if ((firstBody.categoryBitMask & PhysicsCategory.Ball != 0) &&
-            (secondBody.categoryBitMask & PhysicsCategory.Ground != 0)) {
-            if let monster = firstBody.node as? SKShapeNode, let
-                projectile = secondBody.node as? SKShapeNode {
-                print("A collision between the ball and ground")
+            (secondBody.categoryBitMask & PhysicsCategory.Coin != 0)) {
+            print("Contact")
+            
+            if let ball = firstBody.node as? SKShapeNode, let
+                coin = secondBody.node as? SKShapeNode {
+                print("A collision between the ball and coin")
+                coin.removeFromParent()
 //                projectileDidCollideWithMonster(projectile: projectile, monster: monster)
             }
         }
     }
     
-    func didEnd(_ contact: SKPhysicsContact) {
-        print("It ended")
-    }
-//    
+//    func didEnd(_ contact: SKPhysicsContact) {
+//        print("It ended")
+//    }
+//
 }
