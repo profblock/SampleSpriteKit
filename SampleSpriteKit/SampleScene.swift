@@ -15,6 +15,7 @@ struct PhysicsCategory {
     static let Ball   : UInt32 = 0b1       // 1
     static let Ground: UInt32 = 0b10      // 2
     static let Coin: UInt32 = 0b100      // 4
+    static let Wall: UInt32 = 0b1000      // 8
 }
 
 
@@ -42,12 +43,15 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
     private var ball2 : SKShapeNode?
     private var coin: SKShapeNode?
     
+    private var previousPosition: CGPoint!
+    
     private var chargeValue:CGFloat!
     private var startPoint:CGPoint?
     private var myCamera:SKCameraNode!
     
     private var leftLine:SKShapeNode?
     private var wallX:CGFloat!
+    
     
     
     func createSpline(startPoint:CGPoint, numberOfPoints:Int)->[CGPoint]{
@@ -105,6 +109,7 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
         
         physicsWorld.contactDelegate = self
         
+        
         // Create shape node to use during mouse interaction
         let w = (self.size.width + self.size.height) * 0.05
 //        var hexagonPoints = [CGPoint(x: 0, y: -20),
@@ -130,6 +135,7 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
         ball?.fillColor = .blue
         ball?.lineWidth = 4
         ball?.strokeShader = gradientShader
+        previousPosition = ball!.position
         
         
         self.ball2 = SKShapeNode(ellipseOf: CGSize(width: w, height: w))
@@ -170,11 +176,11 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
         
         ball?.physicsBody?.contactTestBitMask = PhysicsCategory.Ball
         ball?.physicsBody?.categoryBitMask = PhysicsCategory.Ball
-        ball?.physicsBody?.collisionBitMask = PhysicsCategory.Ball | PhysicsCategory.Ground
+        ball?.physicsBody?.collisionBitMask = PhysicsCategory.Ball | PhysicsCategory.Ground | PhysicsCategory.Wall
         
         ball2?.physicsBody?.contactTestBitMask = PhysicsCategory.Ball
         ball2?.physicsBody?.categoryBitMask = PhysicsCategory.Ball
-        ball2?.physicsBody?.collisionBitMask = PhysicsCategory.Ball | PhysicsCategory.Ground
+        ball2?.physicsBody?.collisionBitMask = PhysicsCategory.Ball | PhysicsCategory.Ground | PhysicsCategory.Wall
         
         ground.physicsBody?.categoryBitMask = PhysicsCategory.Ground
         
@@ -202,6 +208,8 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
         leftLine?.physicsBody?.isDynamic = false
         leftLine?.physicsBody?.friction = 1.0
         leftLine?.strokeColor = UIColor.red
+        
+        leftLine?.physicsBody?.categoryBitMask = PhysicsCategory.Wall
 
         
         // Add the two nodes to the scene
@@ -226,9 +234,52 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
         
     }
     
+    func centerOnBall() {
+        //Trying something here that should smooth out the camera motion
+        //move camera using lerp
+        //http://www.learn-to-code-london.co.uk/blog/2016/04/smoother-camera-motion-in-spritekit-using-lerp/
+        guard ball != nil else {
+            return
+        }
+        //TODO: Update constants with real values
+        let currentPosition = ball!.position
+        let x = (weightedFactor(previous: previousPosition.x, current: currentPosition.x, currentWeight: 0.03) + 200)
+        let y = (weightedFactor(previous: previousPosition.y, current: currentPosition.y, currentWeight: 0.03) + 75)
+        previousPosition = currentPosition;
+    
+        self.camera?.run(SKAction.move(to: CGPoint(x: x, y: y), duration: 0.01))
+        
+    }
+
+    /* This is allso called a propertial intergral controller (PI)
+     * It's a very dumb one because it only works on one data point (the previous).
+     * This weights the preivous value some fraction (1-currentWeight) and the current (currentWeight)
+     * if weight is less than 0 or greater than 1, then just return current
+ */
+    func weightedFactor(previous: CGFloat, current:CGFloat, currentWeight:CGFloat)->CGFloat{
+        if currentWeight >= 0 && currentWeight <= 1.0 {
+            return (1 - currentWeight) * previous + currentWeight * current;
+        } else {
+             return current
+        }
+        
+    }
+    
+    
+    override func didSimulatePhysics() {
+        //print("Physics simulation")
+        //        let xPos =  ball!.position.x
+        //        let yPos = ball!.position.y
+        //        self.camera?.position = CGPoint(x: xPos, y: yPos)
+
+        centerOnBall()
+    }
+    
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         if let touch = touches.first{
             //print("Touches started")
+            // We can adjust the speed using this, BUT it makes it jittery 
+            //physicsWorld.speed = 0.0
             startPoint = touch.location(in: self)
             //print("x:\(touch.location(in: self).x),y:\(touch.location(in: self).y) ")
         }
@@ -245,6 +296,7 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
         
         if let touch = touches.first, let startPoint = self.startPoint{
             //print("Touches ENDED")
+            physicsWorld.speed = 1
 
             let endPoint = touch.location(in: self)
             //print("x:\(touch.location(in: self).x),y:\(touch.location(in: self).y) ")
@@ -257,10 +309,10 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
     }
     
     override func didFinishUpdate() {
-        let xPos =  ball!.position.x
-        let yPos = ball!.position.y
-        self.camera?.position = CGPoint(x: xPos, y: yPos)
         
+        //print("The velocity is \(ball?.physicsBody!.velocity)")
+        //Moved update to didSimulatePhysics() Seems a better place to have it
+
         moveWall()
         
 /* self.camera?.xScale = self.camera!.xScale * 2.0
@@ -268,10 +320,12 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
  */
     }
     
-    func moveWall() {
+    func moveWall(){
         leftLine!.position.x += 1
 //        SKAction.move(by: CGVector(dx: 1, dy: 0), duration: 5) // Not sure why neither work
 //        print("WE BE MOVIN: \(leftLine!.position.x)")
+    }
+    
     func didBegin(_ contact: SKPhysicsContact) {
         
         print("A collision")
@@ -306,4 +360,4 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
 //    }
 //
 }
-}
+
