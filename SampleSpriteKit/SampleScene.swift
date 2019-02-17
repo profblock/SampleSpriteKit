@@ -51,6 +51,9 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
     
     private var leftLine:SKShapeNode?
     private var wallX:CGFloat!
+    private let normalGravity = CGVector(dx: 0, dy: -9.8)
+    private let noGravity = CGVector(dx: 0, dy: 0)
+    private var oldSpeed = CGVector.zero
     
     
     
@@ -275,11 +278,44 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
         centerOnBall()
     }
     
+    //This kills Gravity and decreaes the speed to a crall. This SHOULD work for SHORT times as long as you don't collide with anything.
+    //TODO: Find better approach or fix this when collisions occur (old velocity will be very wrong in that case
+    func lightPause(){
+        guard ball != nil && ball?.physicsBody?.velocity != nil else {
+            return
+        }
+        oldSpeed = ball!.physicsBody!.velocity
+        self.physicsWorld.gravity = noGravity
+        let slowFactor = CGFloat(0.1)
+        let slowSpeed = CGVector(dx: oldSpeed.dx * slowFactor, dy: oldSpeed.dy * slowFactor)
+        ball?.physicsBody?.velocity = slowSpeed
+    }
+    
+    func normalSpeed(){
+        self.physicsWorld.gravity = self.normalGravity
+        guard ball != nil && ball?.physicsBody?.velocity != nil else {
+            return
+        }
+        //True if BOTH are different directions. If current velicty has flipped, then flip old speed
+        var dx = oldSpeed.dx
+        var dy = oldSpeed.dy
+        if ball!.physicsBody!.velocity.dx * oldSpeed.dx < 0 {
+            
+            dx = -dx
+        }
+        if ball!.physicsBody!.velocity.dy * oldSpeed.dy < 0 {
+            
+            dy = -dy
+        }
+        ball?.physicsBody?.velocity = CGVector(dx: dx, dy: dy)
+    }
+    
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         if let touch = touches.first{
             //print("Touches started")
             // We can adjust the speed using this, BUT it makes it jittery 
             //physicsWorld.speed = 0.0
+            lightPause()
             startPoint = touch.location(in: self)
             //print("x:\(touch.location(in: self).x),y:\(touch.location(in: self).y) ")
         }
@@ -296,7 +332,8 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
         
         if let touch = touches.first, let startPoint = self.startPoint{
             //print("Touches ENDED")
-            physicsWorld.speed = 1
+            //physicsWorld.speed = 1
+            normalSpeed()
 
             let endPoint = touch.location(in: self)
             //print("x:\(touch.location(in: self).x),y:\(touch.location(in: self).y) ")
@@ -309,15 +346,8 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
     }
     
     override func didFinishUpdate() {
-        
-        //print("The velocity is \(ball?.physicsBody!.velocity)")
         //Moved update to didSimulatePhysics() Seems a better place to have it
-
         moveWall()
-        
-/* self.camera?.xScale = self.camera!.xScale * 2.0
- self.camera?.yScale = self.camera!.yScale * 2.0
- */
     }
     
     func moveWall(){
