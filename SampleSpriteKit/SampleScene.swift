@@ -213,11 +213,12 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
         leftLine?.strokeColor = UIColor.red
         
         leftLine?.physicsBody?.categoryBitMask = PhysicsCategory.Wall
+        leftLine?.physicsBody?.contactTestBitMask = PhysicsCategory.Ball
 
         
         // Add the two nodes to the scene
         mainNode?.addChild(self.ball!)
-        mainNode?.addChild(self.ball2!)
+//        mainNode?.addChild(self.ball2!) // Removing ball2 for testing "Game Over"
         mainNode?.addChild(self.coin!)
         mainNode?.addChild(ground)
         mainNode?.addChild(ceiling)
@@ -367,14 +368,13 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func moveWall(){
+        // Moves the "death wall" forward
         leftLine!.position.x += 1
-//        SKAction.move(by: CGVector(dx: 1, dy: 0), duration: 5) // Not sure why neither work
-//        print("WE BE MOVIN: \(leftLine!.position.x)")
     }
     
     func didBegin(_ contact: SKPhysicsContact) {
         
-        print("A collision")
+//        print("A collision")
         // 1
         var firstBody: SKPhysicsBody
         var secondBody: SKPhysicsBody
@@ -391,13 +391,23 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
         if ((firstBody.categoryBitMask & PhysicsCategory.Ball != 0) &&
             (secondBody.categoryBitMask & PhysicsCategory.Coin != 0)) {
             print("Contact")
-            
-            if let ball = firstBody.node as? SKShapeNode, let
+                // _ here is the ball, but we never reference it
+            if let _ = firstBody.node as? SKShapeNode, let
                 coin = secondBody.node as? SKShapeNode {
-                print("A collision between the ball and coin")
+//                print("A collision between the ball and coin")
                 coin.removeFromParent()
+                return // No need for more collision checks if we accomplished our goal
+                
 //                projectileDidCollideWithMonster(projectile: projectile, monster: monster)
             }
+        }
+        
+        if ((firstBody.categoryBitMask & PhysicsCategory.Ball != 0) &&
+            (secondBody.categoryBitMask & PhysicsCategory.Wall != 0)) {
+//            print("Ball hit wall")
+            let reveal = SKTransition.flipHorizontal(withDuration: 0.5)
+            let gameOverScene = GameOverScene(size: self.size, won: false)
+            self.view?.presentScene(gameOverScene, transition: reveal)
         }
     }
     
