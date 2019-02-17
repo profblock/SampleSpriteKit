@@ -312,34 +312,50 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         if let touch = touches.first{
-            //print("Touches started")
+            print("Touches started")
             // We can adjust the speed using this, BUT it makes it jittery 
             //physicsWorld.speed = 0.0
             lightPause()
-            startPoint = touch.location(in: self)
+            startPoint = touch.location(in: self.view)
             //print("x:\(touch.location(in: self).x),y:\(touch.location(in: self).y) ")
         }
     }
     
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         if let touch = touches.first{
-            //print("Touches moved")
-            //print("x:\(touch.location(in: self).x),y:\(touch.location(in: self).y) ")
+            print("Touches moved")
+            print("x:\(touch.location(in: self.view).x),y:\(touch.location(in: self.view).y) ")
         }
     }
+    
+    
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         
         if let touch = touches.first, let startPoint = self.startPoint{
-            //print("Touches ENDED")
+            
             //physicsWorld.speed = 1
             normalSpeed()
 
-            let endPoint = touch.location(in: self)
-            //print("x:\(touch.location(in: self).x),y:\(touch.location(in: self).y) ")
+            let endPoint = touch.location(in: self.view)
+            let dx = startPoint.x - endPoint.x
+            let dy = startPoint.y - endPoint.y
+            let mag = pow(pow(dx, 2.0) + pow(dy, 2.0),0.5)
+            let minVel = CGFloat(20.0) //made this up
+            let maxVel = CGFloat(50.0) //made this up
+            let scalingFactor = CGFloat(0.5) //made this up
+            let uncappedNewMag = scalingFactor*mag + minVel
+            let newVelMag = uncappedNewMag <= maxVel ? uncappedNewMag : maxVel
+            
+            let newDX = dx/mag * newVelMag
+            let newDY = dx/mag * newVelMag
 
-            let factor : CGFloat = 1.0
-            let charge = CGVector(dx: factor*(startPoint.x - endPoint.x), dy: factor*(startPoint.y - endPoint.y))
+            
+    
+            let charge = CGVector(dx: newDX, dy: newDY)
+            
+            
+            
             ball?.physicsBody?.applyImpulse(charge)
         }
         
