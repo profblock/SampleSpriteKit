@@ -4,6 +4,8 @@
 //
 //  Created by Zachary Aamold on 2/17/19.
 //  Copyright © 2019 Aaron Block. All rights reserved.
+// This code was lovingly pulled from:
+// https://www.raywenderlich.com/71-spritekit-tutorial-for-beginners
 //
 
 import SpriteKit
