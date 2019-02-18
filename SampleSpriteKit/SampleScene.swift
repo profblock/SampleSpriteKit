@@ -230,6 +230,21 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
         self.camera = myCamera
         self.addChild(myCamera)
         
+        //physicsWorld.gravity = CGVector(dx:0, dy: 0);
+        
+        //let gravityVector = vector_float3(0,-1,0);
+        
+        //let gravityNode = SKFieldNode.linearGravityField(withVector: gravityVector)
+        //let gravityNode = SKFieldNode.radialGravityField()
+        //ball?.physicsBody?.charge = 1.0
+        //let gravityNode = SKFieldNode.magneticField()
+        
+        //gravityNode.position = CGPoint(x: 400, y: 320)
+        
+        //gravityNode.strength = 0.2
+        
+        //addChild(gravityNode)
+        //gravityNode.zRotation = CGFloat.pi // Flip gravity.
 
 
         
@@ -282,33 +297,39 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
     //This kills Gravity and decreaes the speed to a crall. This SHOULD work for SHORT times as long as you don't collide with anything.
     //TODO: Find better approach or fix this when collisions occur (old velocity will be very wrong in that case
     func lightPause(){
-        guard ball != nil && ball?.physicsBody?.velocity != nil else {
-            return
-        }
-        oldSpeed = ball!.physicsBody!.velocity
-        self.physicsWorld.gravity = noGravity
-        let slowFactor = CGFloat(0.1)
-        let slowSpeed = CGVector(dx: oldSpeed.dx * slowFactor, dy: oldSpeed.dy * slowFactor)
-        ball?.physicsBody?.velocity = slowSpeed
+        self.physicsWorld.speed = 0.0
+        self.camera?.run(SKAction.scale(by: 1.2, duration: 5.0))
+
+//        guard ball != nil && ball?.physicsBody?.velocity != nil else {
+//            return
+//        }
+//        oldSpeed = ball!.physicsBody!.velocity
+//        self.physicsWorld.gravity = noGravity
+//        let slowFactor = CGFloat(0.1)
+//        let slowSpeed = CGVector(dx: oldSpeed.dx * slowFactor, dy: oldSpeed.dy * slowFactor)
+//        ball?.physicsBody?.velocity = slowSpeed
     }
     
     func normalSpeed(){
-        self.physicsWorld.gravity = self.normalGravity
-        guard ball != nil && ball?.physicsBody?.velocity != nil else {
-            return
-        }
-        //True if BOTH are different directions. If current velicty has flipped, then flip old speed
-        var dx = oldSpeed.dx
-        var dy = oldSpeed.dy
-        if ball!.physicsBody!.velocity.dx * oldSpeed.dx < 0 {
-            
-            dx = -dx
-        }
-        if ball!.physicsBody!.velocity.dy * oldSpeed.dy < 0 {
-            
-            dy = -dy
-        }
-        ball?.physicsBody?.velocity = CGVector(dx: dx, dy: dy)
+        self.physicsWorld.speed = 1.0
+        self.camera?.run(SKAction.scale(to: 1.0, duration: 1.0))
+
+//        self.physicsWorld.gravity = self.normalGravity
+//        guard ball != nil && ball?.physicsBody?.velocity != nil else {
+//            return
+//        }
+//        //True if BOTH are different directions. If current velicty has flipped, then flip old speed
+//        var dx = oldSpeed.dx
+//        var dy = oldSpeed.dy
+//        if ball!.physicsBody!.velocity.dx * oldSpeed.dx < 0 {
+//
+//            dx = -dx
+//        }
+//        if ball!.physicsBody!.velocity.dy * oldSpeed.dy < 0 {
+//
+//            dy = -dy
+//        }
+//        ball?.physicsBody?.velocity = CGVector(dx: dx, dy: dy)
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -395,7 +416,7 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
             if let _ = firstBody.node as? SKShapeNode, let
                 coin = secondBody.node as? SKShapeNode {
 //                print("A collision between the ball and coin")
-                coin.removeFromParent()
+                //coin.removeFromParent()
                 return // No need for more collision checks if we accomplished our goal
                 
 //                projectileDidCollideWithMonster(projectile: projectile, monster: monster)
@@ -405,9 +426,9 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
         if ((firstBody.categoryBitMask & PhysicsCategory.Ball != 0) &&
             (secondBody.categoryBitMask & PhysicsCategory.Wall != 0)) {
 //            print("Ball hit wall")
-            let reveal = SKTransition.flipHorizontal(withDuration: 0.5)
-            let gameOverScene = GameOverScene(size: self.size, won: false)
-            self.view?.presentScene(gameOverScene, transition: reveal)
+//            let reveal = SKTransition.flipHorizontal(withDuration: 0.5)
+//            let gameOverScene = GameOverScene(size: self.size, won: false)
+//            self.view?.presentScene(gameOverScene, transition: reveal)
         }
     }
     
