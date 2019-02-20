@@ -487,12 +487,12 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
         // Set last frame time to current time
         lastFrameTime = currentTime
 
-        parallax1?.position.y = (ball?.position.y)!
-        parallax2?.position.y = (ball?.position.y)!
-        parallax3?.position.y = (ball?.position.y)!
-        parallax1Next?.position.y = (ball?.position.y)!
-        parallax2Next?.position.y = (ball?.position.y)!
-        parallax3Next?.position.y = (ball?.position.y)!
+        parallax1?.position.y = self.myCamera.position.y
+        parallax2?.position.y = self.myCamera.position.y
+        parallax3?.position.y = self.myCamera.position.y
+        parallax1Next?.position.y = self.myCamera.position.y
+        parallax2Next?.position.y = self.myCamera.position.y
+        parallax3Next?.position.y = self.myCamera.position.y
 
         self.moveSprite(sprite: parallax1!, nextSprite: parallax1Next!, speed: Float((ball?.speed)! * 1))
         self.moveSprite(sprite: parallax2!, nextSprite: parallax2Next!, speed: Float((ball?.speed)! * 2))
