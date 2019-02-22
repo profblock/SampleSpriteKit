@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8768F3212220720B00CFD59B /* ParallaxSprite.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8768F31F2220720A00CFD59B /* ParallaxSprite.swift */; };
+		8768F3222220720B00CFD59B /* ParallaxBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8768F3202220720B00CFD59B /* ParallaxBackground.swift */; };
 		87E6E9362208D4E600A78579 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87E6E9352208D4E600A78579 /* AppDelegate.swift */; };
 		87E6E9412208D4E600A78579 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 87E6E93F2208D4E600A78579 /* Main.storyboard */; };
 		87E6E9432208D4E800A78579 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 87E6E9422208D4E800A78579 /* Assets.xcassets */; };
@@ -17,6 +19,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		8768F31F2220720A00CFD59B /* ParallaxSprite.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ParallaxSprite.swift; sourceTree = "<group>"; };
+		8768F3202220720B00CFD59B /* ParallaxBackground.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ParallaxBackground.swift; sourceTree = "<group>"; };
 		87E6E9322208D4E600A78579 /* SampleSpriteKit.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SampleSpriteKit.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		87E6E9352208D4E600A78579 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		87E6E9402208D4E600A78579 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -58,6 +62,8 @@
 		87E6E9342208D4E600A78579 /* SampleSpriteKit */ = {
 			isa = PBXGroup;
 			children = (
+				8768F3202220720B00CFD59B /* ParallaxBackground.swift */,
+				8768F31F2220720A00CFD59B /* ParallaxSprite.swift */,
 				87E6E9352208D4E600A78579 /* AppDelegate.swift */,
 				87E6E94D2208D97300A78579 /* SampleScene.swift */,
 				BAC3E6CA221A0ED1001EB274 /* GameOverScene.swift */,
@@ -141,9 +147,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8768F3212220720B00CFD59B /* ParallaxSprite.swift in Sources */,
 				87E6E9502208F69500A78579 /* GameViewController.swift in Sources */,
 				87E6E94E2208D97300A78579 /* SampleScene.swift in Sources */,
 				BAC3E6CB221A0ED1001EB274 /* GameOverScene.swift in Sources */,
+				8768F3222220720B00CFD59B /* ParallaxBackground.swift in Sources */,
 				87E6E9362208D4E600A78579 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
