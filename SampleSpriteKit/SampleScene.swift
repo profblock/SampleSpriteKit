@@ -54,14 +54,6 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
     private let normalGravity = CGVector(dx: 0, dy: -9.8)
     private let noGravity = CGVector(dx: 0, dy: 0)
     private var oldSpeed = CGVector.zero
-    
-//    private var parallax1:SKSpriteNode?
-//    private var parallax2:SKSpriteNode?
-//    private var parallax3:SKSpriteNode?
-//
-//    private var parallax1Next:SKSpriteNode?
-//    private var parallax2Next:SKSpriteNode?
-//    private var parallax3Next:SKSpriteNode?
 
     private var par1:ParallaxBackground?
     private var par2:ParallaxBackground?
@@ -125,34 +117,9 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
     //didMove is the method that is called when the system is loaded.
     override func didMove(to view: SKView) {
         
-//        parallax1 = SKSpriteNode(imageNamed: "ParallaxBack1")
-//        parallax2 = SKSpriteNode(imageNamed: "ParallaxBack2")
-//        parallax3 = SKSpriteNode(imageNamed: "ParallaxBack3")
         par1 = ParallaxBackground(spriteName: "ParallaxBack1", gameScene: self, heightOffset: 0, zPosition: -1)
         par2 = ParallaxBackground(spriteName: "ParallaxBack2", gameScene: self, heightOffset: 50, zPosition: -2)
         par3 = ParallaxBackground(spriteName: "ParallaxBack3", gameScene: self, heightOffset: 100, zPosition: -3)
-
-//        parallax1?.position = CGPoint(x: self.size.width / 2, y: self.size.height / 2)
-//        parallax2?.position = CGPoint(x: self.size.width / 2, y: (self.size.height / 2) + 50)
-//        parallax3?.position = CGPoint(x: self.size.width / 2, y: (self.size.height / 2) + 100)
-//
-//        parallax1Next = parallax1?.copy() as? SKSpriteNode
-//        parallax1Next?.position = CGPoint(x: CGFloat(((parallax1?.position.x)!)) + (parallax1?.size.width)!, y: (parallax1?.position.y)!)
-//        parallax2Next = parallax2?.copy() as? SKSpriteNode
-//        parallax2Next?.position = CGPoint(x: CGFloat(((parallax2?.position.x)!)) + (parallax2?.size.width)!, y: (parallax2?.position.y)!)
-//        parallax3Next = parallax3?.copy() as? SKSpriteNode
-//        parallax3Next?.position = CGPoint(x: CGFloat(((parallax3?.position.x)!)) + (parallax3?.size.width)!, y: (parallax3?.position.y)!)
-        
-        // Makes sure the background objects actually end up in the background
-//        parallax1?.zPosition = -1
-//        parallax2?.zPosition = -2
-//        parallax3?.zPosition = -3
-//
-//        parallax1Next?.zPosition = -1
-//        parallax2Next?.zPosition = -2
-//        parallax3Next?.zPosition = -3
-
-//            object.position = CGPoint(x: self.size.width / 2, y: self.size.height/ 2)
 
         mainNode = SKNode()
         chargeValue = 0.0
@@ -206,12 +173,6 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
         coin?.physicsBody?.categoryBitMask = PhysicsCategory.Coin
         coin?.physicsBody?.collisionBitMask = PhysicsCategory.None
         
-        // Create the ground node and physics body
-//        var splinePoints = [CGPoint(x: 0, y: 500),
-//                            CGPoint(x: 100, y: 50),
-//                            CGPoint(x: 400, y: 110),
-//                            CGPoint(x: 640, y: 20)]
-        
         let baseCornerPoint = CGPoint(x: 0, y: 0)
         var splinePoints = createSpline(startPoint: baseCornerPoint, numberOfPoints: 500)
         
@@ -261,10 +222,6 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
         
         leftLine?.physicsBody?.categoryBitMask = PhysicsCategory.Wall
         leftLine?.physicsBody?.contactTestBitMask = PhysicsCategory.Ball
-
-//        mainNode?.addChild(parallax1!)
-//        mainNode?.addChild(parallax2!)
-//        mainNode?.addChild(parallax3!)
         
         mainNode?.addChild(par1!.sprite!)
         mainNode?.addChild(par2!.sprite!)
@@ -303,8 +260,6 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
         //addChild(gravityNode)
         //gravityNode.zRotation = CGFloat.pi // Flip gravity.
 
-
-        
         //self.addChild(self.ball!)
         
         
@@ -440,39 +395,6 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
         
     }
     
-    // Move a pair of sprites leftward based on a speed value;
-    // when either of the sprites goes off-screen, move it to the
-    // right so that it appears to be seamless movement
-    // Pulled from: http://radar.oreilly.com/2015/08/parallax-scrolling-for-ios-with-swift-and-sprite-kit.html
-//    func moveSprite(sprite : SKSpriteNode,
-//                    nextSprite : SKSpriteNode, speed : Float) -> Void {
-//        var newPosition = CGPoint.zero
-//
-//        // For both the sprite and its duplicate:
-//        for spriteToMove in [sprite, nextSprite] {
-//
-//            // Shift the sprite leftward based on the speed
-//            newPosition = spriteToMove.position
-//            newPosition.x -= CGFloat(speed * Float(deltaTime))
-//            spriteToMove.position = newPosition
-//
-//            // If this sprite is now offscreen (i.e., its rightmost edge is
-//            // farther left than the scene's leftmost edge):
-//            if spriteToMove.frame.maxX < self.frame.minX {
-//
-//                // Shift it over so that it's now to the immediate right
-//                // of the other sprite.
-//                // This means that the two sprites are effectively
-//                // leap-frogging each other as they both move.
-//                spriteToMove.position =
-//                    CGPoint(x: spriteToMove.position.x +
-//                        spriteToMove.size.width * 2,
-//                            y: spriteToMove.position.y)
-//            }
-//
-//        }
-//    }
-    
     // Helpfully pulled from: http://radar.oreilly.com/2015/08/parallax-scrolling-for-ios-with-swift-and-sprite-kit.html
     override func update(_ currentTime: TimeInterval) {
         // First, update the delta time values:
@@ -489,24 +411,14 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
         // Set last frame time to current time
         lastFrameTime = currentTime
 
-        var backSpeed = Float(1)
+        let speedBoost:Float = 2
+        var backSpeed = Float(speedBoost)
         for parallax in [par1, par2, par3] {
             
             parallax?.updateCamera(camera: myCamera)
-            parallax?.move(scene: self, speed: backSpeed, deltaTime: deltaTime)
-            backSpeed += 1
+            parallax?.move(scene: self, speed: (backSpeed * Float((ball?.speed)!)), deltaTime: deltaTime)
+            backSpeed += speedBoost
         }
-        
-//        parallax1?.position.y = self.myCamera.position.y
-//        parallax2?.position.y = self.myCamera.position.y
-//        parallax3?.position.y = self.myCamera.position.y
-//        parallax1Next?.position.y = self.myCamera.position.y
-//        parallax2Next?.position.y = self.myCamera.position.y
-//        parallax3Next?.position.y = self.myCamera.position.y
-//
-//        self.moveSprite(sprite: parallax1!, nextSprite: parallax1Next!, speed: Float((ball?.speed)! * 1))
-//        self.moveSprite(sprite: parallax2!, nextSprite: parallax2Next!, speed: Float((ball?.speed)! * 2))
-//        self.moveSprite(sprite: parallax3!, nextSprite: parallax3Next!, speed: Float((ball?.speed)! * 3))
 
     }
     
