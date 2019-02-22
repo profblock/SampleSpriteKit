@@ -31,9 +31,9 @@ class ParallaxBackground {
     }
     
     func updateCamera(camera: SKCameraNode) {
-        sprite?.position.x = camera.position.x
+        sprite?.position.x = camera.position.x + offset!
         sprite?.position.y = camera.position.y
-        spriteNext?.position.x = camera.position.x
+        spriteNext?.position.x = camera.position.x + offsetNext!
         spriteNext?.position.y = camera.position.y
     }
     
