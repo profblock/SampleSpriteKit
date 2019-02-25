@@ -11,23 +11,26 @@ import SpriteKit
 
 class ParallaxBackground {
     
-    public var sprite:SKSpriteNode?
-    public var spriteNext:SKSpriteNode?
+    public var sprite:SKVideoNode? // Switch to SKVideoNode
+    public var spriteNext:SKVideoNode?
     private var offset:CGFloat?
     private var offsetNext:CGFloat?
     
     init(spriteName: String, gameScene: SKScene, heightOffset: CGFloat, zPosition: CGFloat) {
-        self.sprite = SKSpriteNode(imageNamed: spriteName);
+        self.sprite = SKVideoNode(fileNamed: spriteName)
 //        self.spriteNext = spriteNext
         sprite?.position = CGPoint(x: gameScene.size.width / 2, y: gameScene.size.height / 2 + heightOffset)
         
-        spriteNext = sprite?.copy() as? SKSpriteNode
+        spriteNext = sprite?.copy() as? SKVideoNode
         spriteNext?.position = CGPoint(x: CGFloat((sprite?.position.x)!) + (sprite?.size.width)!, y: (sprite?.position.y)!)
         
         sprite?.zPosition = zPosition
         spriteNext?.zPosition = zPosition
         offset = 0
         offsetNext = 0
+        
+        sprite?.play()
+        spriteNext?.play()
     }
     
     func updateCamera(camera: SKCameraNode) {
