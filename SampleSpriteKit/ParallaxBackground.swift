@@ -17,7 +17,7 @@ class ParallaxBackground {
     private var offsetNext:CGFloat?
     
     init(spriteName: String, gameScene: SKScene, heightOffset: CGFloat, zPosition: CGFloat) {
-        let stringPath = Bundle.main.path(forResource: "sample", ofType: "mov")
+        let stringPath = Bundle.main.path(forResource: spriteName, ofType: "mov")
         let path = URL(fileURLWithPath:stringPath!)
         self.sprite = SKVideoNode(url: path)
 //        self.spriteNext = spriteNext

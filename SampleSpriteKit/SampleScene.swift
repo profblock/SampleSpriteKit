@@ -56,8 +56,7 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
     private var oldSpeed = CGVector.zero
 
     private var par1:ParallaxBackground?
-    
-//    private var par2:ParallaxBackground?
+    private var par2:ParallaxBackground?
 //    private var par3:ParallaxBackground?
 
     // Time of last frame
@@ -118,9 +117,8 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
     //didMove is the method that is called when the system is loaded.
     override func didMove(to view: SKView) {
         
-        par1 = ParallaxBackground(spriteName: "sample.mov", gameScene: self, heightOffset: 0, zPosition: -1)
-        
-//        par2 = ParallaxBackground(spriteName: "ParallaxBack2", gameScene: self, heightOffset: 50, zPosition: -2)
+        par1 = ParallaxBackground(spriteName: "Parallax-Diamonds-1", gameScene: self, heightOffset: 0, zPosition: -1)
+        par2 = ParallaxBackground(spriteName: "Parallax-Diamonds-2", gameScene: self, heightOffset: 0, zPosition: -2)
 //        par3 = ParallaxBackground(spriteName: "ParallaxBack3", gameScene: self, heightOffset: 100, zPosition: -3)
 
         mainNode = SKNode()
@@ -234,12 +232,12 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
         } else {
             debugPrint("Error Par1 doesn't exist")
         }
-//        mainNode?.addChild(par2!.sprite!)
+        mainNode?.addChild(par2!.sprite!)
 //        mainNode?.addChild(par3!.sprite!)
         
         mainNode?.addChild(par1!.spriteNext!)
         
-//        mainNode?.addChild(par2!.spriteNext!)
+        mainNode?.addChild(par2!.spriteNext!)
 //        mainNode?.addChild(par3!.spriteNext!)
 
         // Add the two nodes to the scene
@@ -426,7 +424,7 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
         // TODO: Put back once we figure out how to add video to SKVideoNode
         let speedBoost:Float = 2
         var backSpeed = Float(speedBoost)
-        for parallax in [par1] { // , par2, par3
+        for parallax in [par1, par2] { // , par3
 
             parallax?.updateCamera(camera: myCamera)
             parallax?.move(scene: self, speed: (backSpeed * Float((ball?.speed)!)), deltaTime: deltaTime)
