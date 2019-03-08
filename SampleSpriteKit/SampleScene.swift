@@ -17,6 +17,7 @@ struct PhysicsCategory {
     static let Ground: UInt32 = 0b10      // 2
     static let Coin: UInt32 = 0b100      // 4
     static let Wall: UInt32 = 0b1000      // 8
+    static let Field: UInt32 = 0b10000      // 16
 }
 
 
@@ -189,10 +190,12 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
         ball?.physicsBody?.contactTestBitMask = PhysicsCategory.Ball
         ball?.physicsBody?.categoryBitMask = PhysicsCategory.Ball
         ball?.physicsBody?.collisionBitMask = PhysicsCategory.Ball | PhysicsCategory.Ground | PhysicsCategory.Wall
+        ball?.physicsBody?.fieldBitMask = PhysicsCategory.Field
         
         ball2?.physicsBody?.contactTestBitMask = PhysicsCategory.Ball
         ball2?.physicsBody?.categoryBitMask = PhysicsCategory.Ball
         ball2?.physicsBody?.collisionBitMask = PhysicsCategory.Ball | PhysicsCategory.Ground | PhysicsCategory.Wall
+        
         
         ground.physicsBody?.categoryBitMask = PhysicsCategory.Ground
         
@@ -254,6 +257,11 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
         myCamera = SKCameraNode()
         self.camera = myCamera
         self.addChild(myCamera)
+        
+        let field = SKFieldNode.dragField()
+        field.strength = 0.2
+        field.categoryBitMask = PhysicsCategory.Field
+        self.addChild(field)
         
         //physicsWorld.gravity = CGVector(dx:0, dy: 0);
         
