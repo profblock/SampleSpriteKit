@@ -67,6 +67,14 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
     
     // Time since last frame
     private var deltaTime : TimeInterval = 0
+    
+    private var stamina : CGFloat?
+    // The max value of stamina that should
+    // be allowed to be consumed at any one time
+    let maxShot = CGFloat(25.0);
+    // The max value of stamina that can
+    // ever be held at one time
+    let max = CGFloat(100);
 
     
     
@@ -119,6 +127,9 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
     
     //didMove is the method that is called when the system is loaded.
     override func didMove(to view: SKView) {
+        
+        // Initializing stamina at max value
+        stamina = max;
         
         par1 = ParallaxBackground(spriteName: "Parallax-Diamonds-1", gameScene: self, heightOffset: 0, zPosition: -1)
         par2 = ParallaxBackground(spriteName: "Parallax-Diamonds-2", gameScene: self, heightOffset: 0, zPosition: -2)
