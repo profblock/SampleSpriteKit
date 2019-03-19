@@ -76,6 +76,7 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
     // ever be held at one time
     let max = CGFloat(100);
 
+    private var launcher : Launcher?
     
     
     func createSpline(startPoint:CGPoint, numberOfPoints:Int)->[CGPoint]{
@@ -136,6 +137,7 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
 //        par3 = ParallaxBackground(spriteName: "ParallaxBack3", gameScene: self, heightOffset: 100, zPosition: -3)
 
         mainNode = SKNode()
+        launcher = Launcher(mainNode: mainNode)
         chargeValue = 0.0
         
         physicsWorld.contactDelegate = self
@@ -382,6 +384,7 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
             //physicsWorld.speed = 0.0
             lightPause()
             startPoint = touch.location(in: self.view)
+            launcher?.create(tap: touch.location(in: self), stamina: stamina!)
             //print("x:\(touch.location(in: self).x),y:\(touch.location(in: self).y) ")
         }
     }
@@ -390,6 +393,7 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
         if let touch = touches.first{
             print("Touches moved")
             print("x:\(touch.location(in: self.view).x),y:\(touch.location(in: self.view).y) ")
+            launcher?.repaint(curTap: touch.location(in: self), stamina: stamina!)
         }
     }
     
@@ -401,6 +405,7 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
             
             //physicsWorld.speed = 1
             normalSpeed()
+            launcher?.destroy()
 
             let endPoint = touch.location(in: self.view)
             let dx = startPoint.x - endPoint.x
