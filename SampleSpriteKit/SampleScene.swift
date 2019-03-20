@@ -415,6 +415,7 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
         // TODO: Figure out how to remember where the touch started
         if let touch = touches.first{
             print("Touches started")
+            startPoint = touch.location(in: self.myCamera)
             // We can adjust the speed using this, BUT it makes it jittery 
             //physicsWorld.speed = 0.0
             if(pauseButton.contains(touch.location(in: self.myCamera))){
@@ -427,7 +428,6 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
                 
             } else if(leftScreen.contains(touch.location(in: self.myCamera))){
                 lightPause()
-                startPoint = touch.location(in: self.view)
                 launcher?.create(tap: touch.location(in: self), stamina: stamina!)
                 isLauncherOnScreen = true;
             } else if(rightScreen.contains(touch.location(in: self.myCamera))){
@@ -449,16 +449,9 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         if let touch = touches.first{
             print("Touches moved")
-            if(pauseButton.contains(touch.location(in: self.myCamera))){
-                print("Pause")
-            } else if(leftScreen.contains(touch.location(in: self.myCamera))){
-                print("Left")
+            if(leftScreen.contains(self.startPoint!)){
                 print("x:\(touch.location(in: self.view).x),y:\(touch.location(in: self.view).y) ")
-                if(isLauncherOnScreen == true){
-                    launcher?.repaint(curTap: touch.location(in: self), stamina: stamina!)
-                }
-            } else if(rightScreen.contains(touch.location(in: self.myCamera))){
-                print("Right")
+                launcher?.repaint(curTap: touch.location(in: self), stamina: stamina!)
             }
             
         }
@@ -473,12 +466,12 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
                 print("Pause")
             } else if(leftScreen.contains(touch.location(in: self.myCamera))){
                 //physicsWorld.speed = 1
-                if(isLauncherOnScreen == true){
+                if(leftScreen.contains(self.startPoint!)){
                     normalSpeed()
                     launcher?.destroy()
                     isLauncherOnScreen = false;
                     
-                    let endPoint = touch.location(in: self.view)
+                    let endPoint = touch.location(in: self.myCamera)
                     let dx = startPoint.x - endPoint.x
                     let dy = startPoint.y - endPoint.y
                     let mag = pow(pow(dx, 2.0) + pow(dy, 2.0),0.5)
@@ -501,13 +494,14 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
                 }
             
             } else if(rightScreen.contains(touch.location(in: self.myCamera))){
-                if(isLauncherOnScreen == true){
-                    normalSpeed()
-                    launcher?.destroy()
-                    isLauncherOnScreen = false;
-                }
+            
+                
             }
-
+            if(isLauncherOnScreen == true){
+                normalSpeed()
+                launcher?.destroy()
+                isLauncherOnScreen = false;
+            }
             
         }
         
