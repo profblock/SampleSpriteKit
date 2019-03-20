@@ -44,6 +44,20 @@ class Launcher {
 //        mainCircle?.xScale *= 0.9
 //        mainCircle?.yScale *= 0.9
         
+        if(stamina <= 0) {
+            destroy()
+            return
+        }
+        
+        
+        
+        let circlePos : CGPoint = mainCircle!.position
+        mainCircle?.removeFromParent()
+        mainCircle = SKShapeNode(circleOfRadius: stamina)
+        mainCircle?.position = circlePos
+        mainNode?.addChild(mainCircle!)
+        
+        
         if(secondTouch == nil) {
             secondTouch = SKShapeNode(circleOfRadius: 7)
             secondTouch?.fillColor = .white
