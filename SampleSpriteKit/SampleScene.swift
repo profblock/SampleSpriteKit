@@ -249,11 +249,11 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
         leftLine?.physicsBody?.categoryBitMask = PhysicsCategory.Wall
         leftLine?.physicsBody?.contactTestBitMask = PhysicsCategory.Ball
         
-        let barra = SKShapeNode(rectOf: CGSize(width: 100, height: 30))
-        let meter = SKShapeNode(rectOf: CGSize(width: 50, height: 30))
-        barra.name = "bar"
-        barra.fillColor = SKColor.blue
-        meter.fillColor = SKColor.red
+        let wholeStaminaBar = SKShapeNode(rectOf: CGSize(width: 100, height: 30))
+        let availableStaminaBar = SKShapeNode(rectOf: CGSize(width: 50, height: 30))
+        wholeStaminaBar.name = "bar"
+        wholeStaminaBar.fillColor = SKColor.blue
+        availableStaminaBar.fillColor = SKColor.red
         
         if let par1 = par1 {
             if let sprite = par1.sprite{
@@ -293,12 +293,12 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
         myCamera = SKCameraNode()
         self.camera = myCamera
         self.addChild(myCamera)
-        myCamera.addChild(barra)
-        myCamera.addChild(meter)
+        myCamera.addChild(wholeStaminaBar)
+        myCamera.addChild(availableStaminaBar)
         
         
-        let screenRegionXBound = (self.view?.bounds.maxX)!/2
-        let screenRegionYBound = (self.view?.bounds.maxY)!
+        let screenRegionXBound = self.view!.bounds.maxX/2
+        let screenRegionYBound = self.view!.bounds.maxY
         leftScreen = SKShapeNode(rect: CGRect(x: 0, y: 0, width: screenRegionXBound-1, height: screenRegionYBound))
         leftScreen.fillColor = .clear
         leftScreen.lineWidth = 0
@@ -318,8 +318,11 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
         pauseButton.position = CGPoint(x: -screenRegionXBound + 20, y: (screenRegionYBound/2) - 40)
         myCamera.addChild(pauseButton)
         
-        barra.position = CGPoint(x: -screenRegionXBound + 500, y: (screenRegionYBound/2) - 30)
-        meter.position = CGPoint(x: -screenRegionXBound + 450, y: (screenRegionYBound/2) - 30)
+    
+        let staminaVertOffset : CGFloat = 30.0
+        let staminaHorizOffset : CGFloat = 0.0
+        wholeStaminaBar.position = CGPoint(x: staminaHorizOffset, y: (screenRegionYBound/2) - staminaVertOffset)
+        availableStaminaBar.position = CGPoint(x: staminaHorizOffset, y: (screenRegionYBound/2) - staminaVertOffset)
         
         let field = SKFieldNode.dragField()
         field.strength = 0.2
