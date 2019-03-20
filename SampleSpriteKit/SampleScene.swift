@@ -444,9 +444,12 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
                 }
                 
             } else if(leftScreen.contains(touch.location(in: self.myCamera))){
-                lightPause()
-                launcher?.create(tap: touch.location(in: self), stamina: stamina!)
-                isLauncherOnScreen = true;
+                // Only allow launching if we have stamina
+                if stamina! > CGFloat(0) {
+                    lightPause()
+                    launcher?.create(tap: touch.location(in: self), stamina: stamina!)
+                    isLauncherOnScreen = true;
+                }
             } else if(rightScreen.contains(touch.location(in: self.myCamera))){
                 if(self.isFlipped == false){
                     self.isFlipped = true
@@ -469,6 +472,18 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
             if(leftScreen.contains(self.startPoint!)){
                 print("x:\(touch.location(in: self.view).x),y:\(touch.location(in: self.view).y) ")
                 launcher?.repaint(curTap: touch.location(in: self), stamina: stamina!)
+                
+                // Draining stamina
+                stamina? -= CGFloat(0.5)
+                
+                if(stamina! < CGFloat(0)) {
+                    stamina = 0
+                    launcher?.destroy()
+                    isLauncherOnScreen = false
+                    normalSpeed()
+                }
+                
+                
             }
             
         }
@@ -483,7 +498,7 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
                 print("Pause")
             } else if(leftScreen.contains(touch.location(in: self.myCamera))){
                 //physicsWorld.speed = 1
-                if(leftScreen.contains(self.startPoint!)){
+                if(leftScreen.contains(self.startPoint!) && isLauncherOnScreen){
                     normalSpeed()
                     launcher?.destroy()
                     isLauncherOnScreen = false;
@@ -528,10 +543,21 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
     override func update(_ currentTime: TimeInterval) {
         // First, update the delta time values:
         
+        print(stamina!)
+        
         // If we don't have a last frame time value, this is the first frame,
         // so delta time will be zero.
         if lastFrameTime <= 0 {
             lastFrameTime = currentTime
+        }
+        
+        // Should regenerate stamina as long as
+        // the ball is not being launched
+        if isLauncherOnScreen == false {
+            stamina? += CGFloat(0.5)
+            if(stamina! > max) {
+                stamina = max
+            }
         }
         
         // Update delta time
