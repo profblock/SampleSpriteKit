@@ -411,7 +411,6 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        // TODO: Figure out how to remember where the touch started
         if let touch = touches.first{
             print("Touches started")
             // We can adjust the speed using this, BUT it makes it jittery 
