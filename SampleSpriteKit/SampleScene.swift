@@ -137,6 +137,11 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
     //didMove is the method that is called when the system is loaded.
     override func didMove(to view: SKView) {
         
+        myCamera = SKCameraNode()
+        self.camera = myCamera
+        self.addChild(myCamera)
+
+        
         // Initializing stamina at max value
         stamina = max;
         
@@ -145,7 +150,7 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
 //        par3 = ParallaxBackground(spriteName: "ParallaxBack3", gameScene: self, heightOffset: 100, zPosition: -3)
 
         mainNode = SKNode()
-        launcher = Launcher(mainNode: mainNode)
+        launcher = Launcher(mainNode: myCamera)
         chargeValue = 0.0
         
         physicsWorld.contactDelegate = self
@@ -290,9 +295,6 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
         
         
         self.addChild(mainNode!)
-        myCamera = SKCameraNode()
-        self.camera = myCamera
-        self.addChild(myCamera)
         myCamera.addChild(wholeStaminaBar)
         myCamera.addChild(availableStaminaBar)
         
@@ -324,10 +326,11 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
         wholeStaminaBar.position = CGPoint(x: staminaHorizOffset, y: (screenRegionYBound/2) - staminaVertOffset)
         availableStaminaBar.position = CGPoint(x: staminaHorizOffset, y: (screenRegionYBound/2) - staminaVertOffset)
         
-        let field = SKFieldNode.dragField()
-        field.strength = 0.2
-        field.categoryBitMask = PhysicsCategory.Field
-        self.addChild(field)
+        //Goodbye AirResistance
+//        let field = SKFieldNode.dragField()
+//        field.strength = 0.2
+//        field.categoryBitMask = PhysicsCategory.Field
+//        self.addChild(field)
         
         //physicsWorld.gravity = CGVector(dx:0, dy: 0);
         
@@ -447,7 +450,7 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
                 // Only allow launching if we have stamina
                 if stamina! > CGFloat(0) {
                     lightPause()
-                    launcher?.create(tap: touch.location(in: self), stamina: stamina!)
+                    launcher?.create(tap: touch.location(in: self.myCamera), stamina: stamina!)
                     isLauncherOnScreen = true;
                 }
             } else if(rightScreen.contains(touch.location(in: self.myCamera))){
@@ -471,7 +474,7 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
             print("Touches moved")
             if(leftScreen.contains(self.startPoint!)){
                 print("x:\(touch.location(in: self.view).x),y:\(touch.location(in: self.view).y) ")
-                launcher?.repaint(curTap: touch.location(in: self), stamina: stamina!)
+                launcher?.repaint(curTap: touch.location(in: self.myCamera), stamina: stamina!)
                 
                 // Draining stamina
                 stamina? -= CGFloat(0.5)
@@ -508,7 +511,7 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
                     let dy = startPoint.y - endPoint.y
                     let mag = pow(pow(dx, 2.0) + pow(dy, 2.0),0.5)
                     let minVel = CGFloat(20.0) //made this up
-                    let maxVel = CGFloat(50.0) //made this up
+                    let maxVel = CGFloat(200.0) //made this up
                     let scalingFactor = CGFloat(0.5) //made this up
                     let uncappedNewMag = scalingFactor*mag + minVel
                     let newVelMag = uncappedNewMag <= maxVel ? uncappedNewMag : maxVel
