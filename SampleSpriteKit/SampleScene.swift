@@ -45,7 +45,8 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
     private var ball : SKShapeNode?
     private var ball2 : SKShapeNode?
     private var coin: SKShapeNode?
-    
+    private var bar: SKShapeNode?
+    private var meter: SKShapeNode?
     private var previousPosition: CGPoint!
     
     private var chargeValue:CGFloat!
@@ -84,6 +85,7 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
 
     private var launcher : Launcher?
     
+   
     
     func createSpline(startPoint:CGPoint, numberOfPoints:Int)->[CGPoint]{
         let horizMin = 40
@@ -247,6 +249,12 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
         leftLine?.physicsBody?.categoryBitMask = PhysicsCategory.Wall
         leftLine?.physicsBody?.contactTestBitMask = PhysicsCategory.Ball
         
+        let barra = SKShapeNode(rectOf: CGSize(width: 100, height: 30))
+        let meter = SKShapeNode(rectOf: CGSize(width: 50, height: 30))
+        barra.name = "bar"
+        barra.fillColor = SKColor.blue
+        meter.fillColor = SKColor.red
+        
         if let par1 = par1 {
             if let sprite = par1.sprite{
                 mainNode?.addChild(sprite)
@@ -274,6 +282,10 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
         
         
         
+      
+        
+        
+        
         
         
         
@@ -281,6 +293,8 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
         myCamera = SKCameraNode()
         self.camera = myCamera
         self.addChild(myCamera)
+        myCamera.addChild(barra)
+        myCamera.addChild(meter)
         
         
         let screenRegionXBound = (self.view?.bounds.maxX)!/2
@@ -304,7 +318,8 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
         pauseButton.position = CGPoint(x: -screenRegionXBound + 20, y: (screenRegionYBound/2) - 40)
         myCamera.addChild(pauseButton)
         
-        
+        barra.position = CGPoint(x: -screenRegionXBound + 500, y: (screenRegionYBound/2) - 30)
+        meter.position = CGPoint(x: -screenRegionXBound + 450, y: (screenRegionYBound/2) - 30)
         
         let field = SKFieldNode.dragField()
         field.strength = 0.2

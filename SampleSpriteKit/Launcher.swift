@@ -69,7 +69,11 @@ class Launcher {
     }
     
     func drawLine() {
-        
+        guard
+            let firstTouch = firstTouch,
+            let secondTouch = secondTouch else {
+            return
+        }
         if(touchLine == nil) {
             touchLine = SKShapeNode()
             touchLine?.strokeColor = SKColor.white
@@ -77,8 +81,8 @@ class Launcher {
             mainNode?.addChild(touchLine!)
         }
         let pathToDraw = CGMutablePath()
-        pathToDraw.move(to: (firstTouch?.position)!)
-        pathToDraw.addLine(to: (secondTouch?.position)!)
+        pathToDraw.move(to: firstTouch.position)
+        pathToDraw.addLine(to: secondTouch.position)
         touchLine?.path = pathToDraw
         
     }
