@@ -25,6 +25,8 @@ class Launcher {
     
     func create(tap : CGPoint, stamina : CGFloat) {
         
+        if(mainCircle != nil) { return }
+        
         mainCircle = SKShapeNode(circleOfRadius: stamina)
         mainCircle?.position = tap
         
