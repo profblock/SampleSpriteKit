@@ -412,7 +412,6 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        // TODO: Figure out how to remember where the touch started
         if let touch = touches.first{
             print("Touches started")
             startPoint = touch.location(in: self.myCamera)
