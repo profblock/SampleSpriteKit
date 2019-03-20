@@ -61,6 +61,11 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
     private var par1:ParallaxBackground?
     private var par2:ParallaxBackground?
 //    private var par3:ParallaxBackground?
+    
+    private var leftScreen: SKShapeNode!
+    private var rightScreen: SKShapeNode!
+    private var pauseButton: SKShapeNode!
+    private var isFlipped = false
 
     // Time of last frame
     private var lastFrameTime : TimeInterval = 0
@@ -267,10 +272,38 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
         mainNode?.addChild(leftLine!)
         
         
+        
+        
+        
+        
         self.addChild(mainNode!)
         myCamera = SKCameraNode()
         self.camera = myCamera
         self.addChild(myCamera)
+        
+        
+        let screenRegionXBound = (self.view?.bounds.maxX)!/2
+        let screenRegionYBound = (self.view?.bounds.maxY)!
+        leftScreen = SKShapeNode(rect: CGRect(x: 0, y: 0, width: screenRegionXBound-1, height: screenRegionYBound))
+        leftScreen.fillColor = .clear
+        leftScreen.lineWidth = 0
+        leftScreen.position = CGPoint(x: -screenRegionXBound, y: -(screenRegionYBound/2))
+        myCamera.addChild(leftScreen)
+        
+        rightScreen = SKShapeNode(rect: CGRect(x: 0, y: 0, width: screenRegionXBound-1, height: screenRegionYBound))
+        rightScreen.fillColor = .clear
+        rightScreen.lineWidth = 1
+        rightScreen.strokeColor = .purple
+        rightScreen.position = CGPoint(x: 1, y: -(screenRegionYBound/2))
+        myCamera.addChild(rightScreen)
+        
+        pauseButton = SKShapeNode(rect: CGRect(x: 0, y: 0, width: 30, height: 30))
+        pauseButton.fillColor = .purple
+        pauseButton.lineWidth = 0
+        pauseButton.position = CGPoint(x: -screenRegionXBound + 20, y: (screenRegionYBound/2) - 40)
+        myCamera.addChild(pauseButton)
+        
+        
         
         let field = SKFieldNode.dragField()
         field.strength = 0.2
@@ -378,13 +411,36 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        // TODO: Figure out how to remember where the touch started
         if let touch = touches.first{
             print("Touches started")
             // We can adjust the speed using this, BUT it makes it jittery 
             //physicsWorld.speed = 0.0
-            lightPause()
-            startPoint = touch.location(in: self.view)
-            launcher?.create(tap: touch.location(in: self), stamina: stamina!)
+            if(pauseButton.contains(touch.location(in: self.myCamera))){
+                print("Pause")
+                if(self.isPaused == false){
+                    self.isPaused = true
+                } else{
+                    self.isPaused = false
+                }
+                
+            } else if(leftScreen.contains(touch.location(in: self.myCamera))){
+                lightPause()
+                startPoint = touch.location(in: self.view)
+                launcher?.create(tap: touch.location(in: self), stamina: stamina!)
+            } else if(rightScreen.contains(touch.location(in: self.myCamera))){
+                print(type(of: rightScreen.strokeColor))
+                if(self.isFlipped == false){
+                    self.isFlipped = true
+                    rightScreen.strokeColor = .blue
+                } else if(self.isFlipped == true){
+                    self.isFlipped = false
+                    rightScreen.strokeColor = .purple
+                }
+            }
+            
+            
+            
             //print("x:\(touch.location(in: self).x),y:\(touch.location(in: self).y) ")
         }
     }
@@ -392,7 +448,15 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         if let touch = touches.first{
             print("Touches moved")
-            print("x:\(touch.location(in: self.view).x),y:\(touch.location(in: self.view).y) ")
+            if(pauseButton.contains(touch.location(in: self.myCamera))){
+                print("Pause")
+            } else if(leftScreen.contains(touch.location(in: self.myCamera))){
+                print("Left")
+                print("x:\(touch.location(in: self.view).x),y:\(touch.location(in: self.view).y) ")
+            } else if(rightScreen.contains(touch.location(in: self.myCamera))){
+                print("Right")
+            }
+            
             launcher?.repaint(curTap: touch.location(in: self), stamina: stamina!)
         }
     }
@@ -402,31 +466,40 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         
         if let touch = touches.first, let startPoint = self.startPoint{
-            
-            //physicsWorld.speed = 1
-            normalSpeed()
-            launcher?.destroy()
+            if(pauseButton.contains(touch.location(in: self.myCamera))){
+                print("Pause")
+            } else if(leftScreen.contains(touch.location(in: self.myCamera))){
+                //physicsWorld.speed = 1
+                normalSpeed()
+                launcher?.destroy()
+                
+                let endPoint = touch.location(in: self.view)
+                let dx = startPoint.x - endPoint.x
+                let dy = startPoint.y - endPoint.y
+                let mag = pow(pow(dx, 2.0) + pow(dy, 2.0),0.5)
+                let minVel = CGFloat(20.0) //made this up
+                let maxVel = CGFloat(50.0) //made this up
+                let scalingFactor = CGFloat(0.5) //made this up
+                let uncappedNewMag = scalingFactor*mag + minVel
+                let newVelMag = uncappedNewMag <= maxVel ? uncappedNewMag : maxVel
+                
+                let newDX = dx/mag * newVelMag
+                let newDY = dx/mag * newVelMag
+                
+                
+                
+                let charge = CGVector(dx: newDX, dy: newDY)
+                
+                
+                
+                ball?.physicsBody?.applyImpulse(charge)
+                
+                //launcher?.create(tap: touch.location(in: self), stamina: stamina!)
+            } else if(rightScreen.contains(touch.location(in: self.myCamera))){
+                
+            }
 
-            let endPoint = touch.location(in: self.view)
-            let dx = startPoint.x - endPoint.x
-            let dy = startPoint.y - endPoint.y
-            let mag = pow(pow(dx, 2.0) + pow(dy, 2.0),0.5)
-            let minVel = CGFloat(20.0) //made this up
-            let maxVel = CGFloat(50.0) //made this up
-            let scalingFactor = CGFloat(0.5) //made this up
-            let uncappedNewMag = scalingFactor*mag + minVel
-            let newVelMag = uncappedNewMag <= maxVel ? uncappedNewMag : maxVel
             
-            let newDX = dx/mag * newVelMag
-            let newDY = dx/mag * newVelMag
-
-            
-    
-            let charge = CGVector(dx: newDX, dy: newDY)
-            
-            
-            
-            ball?.physicsBody?.applyImpulse(charge)
         }
         
     }
