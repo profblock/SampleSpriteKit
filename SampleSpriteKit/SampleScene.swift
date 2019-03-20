@@ -66,6 +66,7 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
     private var rightScreen: SKShapeNode!
     private var pauseButton: SKShapeNode!
     private var isFlipped = false
+    private var isLauncherOnScreen = false;
 
     // Time of last frame
     private var lastFrameTime : TimeInterval = 0
@@ -427,8 +428,8 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
                 lightPause()
                 startPoint = touch.location(in: self.view)
                 launcher?.create(tap: touch.location(in: self), stamina: stamina!)
+                isLauncherOnScreen = true;
             } else if(rightScreen.contains(touch.location(in: self.myCamera))){
-                print(type(of: rightScreen.strokeColor))
                 if(self.isFlipped == false){
                     self.isFlipped = true
                     rightScreen.strokeColor = .blue
@@ -452,11 +453,13 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
             } else if(leftScreen.contains(touch.location(in: self.myCamera))){
                 print("Left")
                 print("x:\(touch.location(in: self.view).x),y:\(touch.location(in: self.view).y) ")
+                if(isLauncherOnScreen == true){
+                    launcher?.repaint(curTap: touch.location(in: self), stamina: stamina!)
+                }
             } else if(rightScreen.contains(touch.location(in: self.myCamera))){
                 print("Right")
             }
             
-            launcher?.repaint(curTap: touch.location(in: self), stamina: stamina!)
         }
     }
     
@@ -469,33 +472,39 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
                 print("Pause")
             } else if(leftScreen.contains(touch.location(in: self.myCamera))){
                 //physicsWorld.speed = 1
-                normalSpeed()
-                launcher?.destroy()
-                
-                let endPoint = touch.location(in: self.view)
-                let dx = startPoint.x - endPoint.x
-                let dy = startPoint.y - endPoint.y
-                let mag = pow(pow(dx, 2.0) + pow(dy, 2.0),0.5)
-                let minVel = CGFloat(20.0) //made this up
-                let maxVel = CGFloat(50.0) //made this up
-                let scalingFactor = CGFloat(0.5) //made this up
-                let uncappedNewMag = scalingFactor*mag + minVel
-                let newVelMag = uncappedNewMag <= maxVel ? uncappedNewMag : maxVel
-                
-                let newDX = dx/mag * newVelMag
-                let newDY = dx/mag * newVelMag
-                
-                
-                
-                let charge = CGVector(dx: newDX, dy: newDY)
-                
-                
-                
-                ball?.physicsBody?.applyImpulse(charge)
-                
-                //launcher?.create(tap: touch.location(in: self), stamina: stamina!)
+                if(isLauncherOnScreen == true){
+                    normalSpeed()
+                    launcher?.destroy()
+                    isLauncherOnScreen = false;
+                    
+                    let endPoint = touch.location(in: self.view)
+                    let dx = startPoint.x - endPoint.x
+                    let dy = startPoint.y - endPoint.y
+                    let mag = pow(pow(dx, 2.0) + pow(dy, 2.0),0.5)
+                    let minVel = CGFloat(20.0) //made this up
+                    let maxVel = CGFloat(50.0) //made this up
+                    let scalingFactor = CGFloat(0.5) //made this up
+                    let uncappedNewMag = scalingFactor*mag + minVel
+                    let newVelMag = uncappedNewMag <= maxVel ? uncappedNewMag : maxVel
+                    
+                    let newDX = dx/mag * newVelMag
+                    let newDY = dx/mag * newVelMag
+                    
+                    
+                    
+                    let charge = CGVector(dx: newDX, dy: newDY)
+                    
+                    
+                    
+                    ball?.physicsBody?.applyImpulse(charge)
+                }
+            
             } else if(rightScreen.contains(touch.location(in: self.myCamera))){
-                
+                if(isLauncherOnScreen == true){
+                    normalSpeed()
+                    launcher?.destroy()
+                    isLauncherOnScreen = false;
+                }
             }
 
             
