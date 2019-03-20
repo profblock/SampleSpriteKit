@@ -286,14 +286,15 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
         
         
         
-        myCamera.addChild(barra)
-        myCamera.addChild(meter)
+        
         
         
         self.addChild(mainNode!)
         myCamera = SKCameraNode()
         self.camera = myCamera
         self.addChild(myCamera)
+        myCamera.addChild(barra)
+        myCamera.addChild(meter)
         
         
         let screenRegionXBound = (self.view?.bounds.maxX)!/2
