@@ -82,6 +82,8 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
     // The max value of stamina that can
     // ever be held at one time
     let max = CGFloat(100);
+    
+    let debug : Bool = false
 
     private var launcher : Launcher?
     
@@ -627,9 +629,11 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
         if ((firstBody.categoryBitMask & PhysicsCategory.Ball != 0) &&
             (secondBody.categoryBitMask & PhysicsCategory.Wall != 0)) {
 //            print("Ball hit wall")
-//            let reveal = SKTransition.flipHorizontal(withDuration: 0.5)
-//            let gameOverScene = GameOverScene(size: self.size, won: false)
-//            self.view?.presentScene(gameOverScene, transition: reveal)
+            if(debug == false) {
+                let reveal = SKTransition.flipHorizontal(withDuration: 0.5)
+                let gameOverScene = GameOverScene(size: self.size, won: false)
+                self.view?.presentScene(gameOverScene, transition: reveal)
+            }
         }
     }
     
