@@ -589,7 +589,9 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
     
     func moveWall(){
         // Moves the "death wall" forward
-        leftLine!.position.x += 1
+        if isLauncherOnScreen == false {
+            leftLine!.position.x += 1
+        }
     }
     
     func didBegin(_ contact: SKPhysicsContact) {
