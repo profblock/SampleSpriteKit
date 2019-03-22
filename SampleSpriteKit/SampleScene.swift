@@ -476,9 +476,6 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
                 print("x:\(touch.location(in: self.view).x),y:\(touch.location(in: self.view).y) ")
                 launcher?.repaint(curTap: touch.location(in: self.myCamera), stamina: stamina!)
                 
-                // Draining stamina
-                stamina? -= CGFloat(0.5)
-                
                 if(stamina! < CGFloat(0)) {
                     stamina = 0
                     launcher?.destroy()
@@ -561,6 +558,10 @@ class SampleScene: SKScene, SKPhysicsContactDelegate {
             if(stamina! > max) {
                 stamina = max
             }
+        } else {
+            // Draining stamina
+            stamina? -= CGFloat(0.5)
+            launcher?.repaint(stamina: stamina!)
         }
         
         // Update delta time
